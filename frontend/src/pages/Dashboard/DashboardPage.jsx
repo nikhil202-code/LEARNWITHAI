@@ -110,7 +110,7 @@ const DashboardPage = () => {
             id:doc._id,
             description:doc.title,
             timestamp:doc.lastAccessed,
-            link:`/document/${doc._id}`,
+            link:`/documents/${doc._id}`,
             type:'document',
           })),
           ...(dashboardData.recentActivity.quizzes || []).map( quiz=>({
