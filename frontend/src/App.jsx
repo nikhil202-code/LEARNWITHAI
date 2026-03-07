@@ -31,7 +31,7 @@ return(
     <Routes>
       <Route
        path="/"
-       element={isAuthenticated? <Navigate to="/dasboard" replace/>: <Navigate to ="/login" replace/>} 
+       element={isAuthenticated? <Navigate to="/dashboard" replace/>: <Navigate to ="/login" replace/>} 
       
       />
       <Route path='login' element={<LoginPage/>}/>

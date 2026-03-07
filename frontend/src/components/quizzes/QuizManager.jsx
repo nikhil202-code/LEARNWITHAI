@@ -157,7 +157,7 @@ const QuizManager = ({ documentId }) => {
                         <Button
                             type='button'
                             variant='outline'
-                            onClick={() => setIsDeleteModalOpen(false0)}
+                            onClick={() => setIsDeleteModalOpen(false)}
                             disabled={deleting}>
                             Cancel
                         </Button>
@@ -170,7 +170,7 @@ const QuizManager = ({ documentId }) => {
                     </div>
                 </div>
             </Modal>
-            
+
         </div>
     )
 }
