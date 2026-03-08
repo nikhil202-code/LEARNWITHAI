@@ -32,14 +32,15 @@ export const uploadDocument = async (req, res, next) => {
                 })
         }
 
-        const baseUrl = `http://localhost:${process.env.PORT || 8000}`
-        const fileUrl = `${baseUrl}/uploads/documents/${req.file.filename}`
+        // const baseUrl = `http://localhost:${process.env.PORT || 8000}`
+        // const fileUrl = `${baseUrl}/uploads/documents/${req.file.filename}`
 
         const document = await Document.create({
             userId: req.user._id,
             title,
             fileName: req.file.originalname,
-            filePath: fileUrl,
+            //filePath: fileUrl,
+            filePath: req.file.path,
             fileSize: req.file.size,
             status: 'processing'
 
@@ -208,7 +209,7 @@ export const deleteDocument = async (req, res, next) => {
                 })
         }
         //delete file from filesystem
-        await fs.unlink(document.filePath).catch(() => { })
+       // await fs.unlink(document.filePath).catch(() => { })
 
         //delete doc
         await document.deleteOne()
