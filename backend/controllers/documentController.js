@@ -1,7 +1,7 @@
 import Document from "../models/Document.js"
 import { extractTextFromPDF } from '../utils/pdfParser.js'
 import { chunkText } from '../utils/textChunker.js'
-import fs from 'fs/promises'
+// import fs from 'fs/promises'
 import mongoose from "mongoose"
 import Flashcard from '../models/Flashcard.js'
 import Quiz from '../models/Quiz.js'
@@ -86,47 +86,44 @@ export const uploadDocument = async (req, res, next) => {
 // }
 
 
-
 const processPDF = async (documentId, fileUrl) => {
-    try {
+  try {
 
-        const tempPath = path.join("temp", `${documentId}.pdf`)
+    const tempPath = path.join("/tmp", `${documentId}.pdf`)
 
-        const response = await axios({
-            url: fileUrl,
-            method: "GET",
-            responseType: "stream"
-        })
+    const response = await axios({
+      url: fileUrl,
+      method: "GET",
+      responseType: "stream"
+    })
 
-        const writer = fs.createWriteStream(tempPath)
-        response.data.pipe(writer)
+    const writer = fs.createWriteStream(tempPath)
+    response.data.pipe(writer)
 
-        await new Promise((resolve, reject) => {
-            writer.on("finish", resolve)
-            writer.on("error", reject)
-        })
+    await new Promise((resolve, reject) => {
+      writer.on("finish", resolve)
+      writer.on("error", reject)
+    })
 
-        const { text } = await extractTextFromPDF(tempPath)
+    const { text } = await extractTextFromPDF(tempPath)
 
-        const chunks = chunkText(text, 500, 50)
+    const chunks = chunkText(text, 500, 50)
 
-        await Document.findByIdAndUpdate(documentId, {
-            extractedText: text,
-            chunks,
-            status: "ready"
-        })
+    await Document.findByIdAndUpdate(documentId, {
+      extractedText: text,
+      chunks,
+      status: "ready"
+    })
 
-        fs.unlinkSync(tempPath)
+    fs.unlinkSync(tempPath)
 
-        console.log(`Document ${documentId} processed successfully`)
+  } catch (error) {
+    console.error(`Error processing document ${documentId}:`, error)
 
-    } catch (error) {
-        console.error(`Error processing document ${documentId}:`, error)
-
-        await Document.findByIdAndUpdate(documentId, {
-            status: "failed"
-        })
-    }
+    await Document.findByIdAndUpdate(documentId, {
+      status: "failed"
+    })
+  }
 }
 
 
