@@ -5,9 +5,10 @@ import fs from 'fs/promises'
 import mongoose from "mongoose"
 import Flashcard from '../models/Flashcard.js'
 import Quiz from '../models/Quiz.js'
-//upload pfd doc
-//route POST/api/document/upload 
-// private
+import axios from "axios"
+import fs from "fs"
+import path from "path"
+
 
 export const uploadDocument = async (req, res, next) => {
     try {
@@ -65,24 +66,69 @@ export const uploadDocument = async (req, res, next) => {
     }
 }
 
-//helper function 
-const processPDF = async (documentId, filePath) => {
+// //helper function 
+// const processPDF = async (documentId, filePath) => {
+//     try {
+//         const { text } = await extractTextFromPDF(filePath)
+//         const chunks = chunkText(text, 500, 50)
+//         await Document.findByIdAndUpdate(documentId, {
+//             extractedText: text,
+//             chunks: chunks,
+//             status: 'ready'
+//         })
+//         console.log(`Document ${documentId} processed successfully`)
+//     } catch (error) {
+//         console.error(`Error processing document ${documentId}:`, error)
+//         await Document.findByIdAndUpdate(documentId, {
+//             status: 'failed'
+//         })
+//     }
+// }
+
+
+
+const processPDF = async (documentId, fileUrl) => {
     try {
-        const { text } = await extractTextFromPDF(filePath)
+
+        const tempPath = path.join("temp", `${documentId}.pdf`)
+
+        const response = await axios({
+            url: fileUrl,
+            method: "GET",
+            responseType: "stream"
+        })
+
+        const writer = fs.createWriteStream(tempPath)
+        response.data.pipe(writer)
+
+        await new Promise((resolve, reject) => {
+            writer.on("finish", resolve)
+            writer.on("error", reject)
+        })
+
+        const { text } = await extractTextFromPDF(tempPath)
+
         const chunks = chunkText(text, 500, 50)
+
         await Document.findByIdAndUpdate(documentId, {
             extractedText: text,
-            chunks: chunks,
-            status: 'ready'
+            chunks,
+            status: "ready"
         })
+
+        fs.unlinkSync(tempPath)
+
         console.log(`Document ${documentId} processed successfully`)
+
     } catch (error) {
         console.error(`Error processing document ${documentId}:`, error)
+
         await Document.findByIdAndUpdate(documentId, {
-            status: 'failed'
+            status: "failed"
         })
     }
 }
+
 
 
 
