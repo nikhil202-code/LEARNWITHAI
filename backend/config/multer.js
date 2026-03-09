@@ -6,7 +6,9 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "learnwithai-documents",
-    resource_type: "raw", // important for PDFs
+    resource_type: "raw",
+    type: "upload",          // important
+    access_mode: "public",   // important
     public_id: (req, file) => {
       return Date.now() + "-" + file.originalname
     }
