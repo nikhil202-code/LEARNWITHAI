@@ -34,15 +34,18 @@ const DocumentDetailPage = () => {
   }, [id])
 
   //Helper Fn to get the full  pdf url
-  const getPdfUrl = () => {
-    if (!document?.data.filePath) return null
-    const filePath = document.data.filePath
-    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
-      return filePath
-    }
-    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000'
-    return `${baseUrl}${filePath.startsWith('/') ? '' : '/'}${filePath}`
-  }
+  // const getPdfUrl = () => {
+  //   if (!document?.data.filePath) return null
+  //   const filePath = document.data.filePath
+  //   if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+  //     return filePath
+  //   }
+  //   const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000'
+  //   return `${baseUrl}${filePath.startsWith('/') ? '' : '/'}${filePath}`
+  // }
+
+  const getPdfUrl = () => document?.data?.filePath || null
+  
   const renderContent = () => {
     if (loading) {
       return <Spinner />
@@ -69,7 +72,7 @@ const DocumentDetailPage = () => {
         <div className='w-full h-[70vh] bg-white rounded border border-gray-300'>
           <iframe
             //src={pdfUrl}
-              src={`https://docs.google.com/gview?url=${pdfUrl}&embedded=true`}
+             src={`https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`}
             className='w-full h-[70vh] bg-white rounded border border-gray-300'
             title='PDF viewer'
             frameBorder={0}
