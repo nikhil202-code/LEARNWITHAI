@@ -39,7 +39,7 @@ if(err.name==='TokenExpiredError'){
 }
 
 console.error('Error:',{
-    message:err.message,
+    message : err.message,
     stack:process.env.NODE_ENV==='development'?err.stack:undefined
 })
 
